@@ -1,0 +1,50 @@
+# ════════════════════════════════════════════════════════
+#  JARVIS — Python Dependencies
+#  Install with: pip install -r requirements.txt
+# ════════════════════════════════════════════════════════
+
+# ── Core AI ─────────────────────────────────────────────
+anthropic>=0.40.0           # Claude API client
+
+# ── Environment ─────────────────────────────────────────
+python-dotenv>=1.0.0        # .env file loading
+
+# ── Voice Input (STT) ────────────────────────────────────
+SpeechRecognition>=3.10.0   # Google STT / Whisper integration
+PyAudioWPatch>=0.2.12       # Microphone access — Python 3.14 compatible PyAudio fork
+
+# ── Voice Output (TTS) ───────────────────────────────────
+pyttsx3>=2.90               # Offline TTS engine
+
+# ── GUI & System Tray ────────────────────────────────────
+PyQt5>=5.15.9               # Desktop HUD interface
+PyQt5-Qt5>=5.15.2
+pystray>=0.19.5             # Windows system tray integration
+Pillow>=10.0.0              # Tray icon rendering & image handling
+
+# ── PC Control ───────────────────────────────────────────
+pyautogui>=0.9.54           # Keyboard / mouse automation
+psutil>=5.9.8               # Process management
+
+# ── Volume Control (optional but recommended) ─────────────
+comtypes>=1.4.1             # Windows COM interop
+pycaw>=20240210             # Windows audio control
+
+# ── Web Research ─────────────────────────────────────────
+requests>=2.31.0            # HTTP client
+beautifulsoup4>=4.12.3      # HTML scraping
+lxml>=5.1.0                 # Fast HTML/XML parser
+
+# ── PDF Reading ──────────────────────────────────────────
+pdfplumber>=0.11.0          # PDF text extraction (primary)
+PyPDF2>=3.0.1               # PDF text extraction (fallback)
+
+# ── Optional: Offline Whisper STT ────────────────────────
+# Uncomment if you want offline speech recognition:
+# openai-whisper>=20231117
+# torch>=2.2.0
+# numpy>=1.24.0
+
+# ── Optional: ElevenLabs natural voice ───────────────────
+# Already handled via requests; install pygame for playback:
+# pygame>=2.5.2
