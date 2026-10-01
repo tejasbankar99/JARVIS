@@ -166,6 +166,34 @@ def get_recent_conversation(n: int = 10) -> list:
     return [{"role": e["role"], "content": e["value"]} for e in recent]
 
 
+def get_session_stats() -> dict:
+    """Return summary statistics of stored memories and conversation history."""
+    data = _load()
+    facts_count = len(data.get("facts", {}))
+    entries = data.get("entries", [])
+    conv_count = sum(1 for e in entries if e.get("type") == "conversation")
+    size_bytes = MEMORY_FILE.stat().st_size if MEMORY_FILE.exists() else 0
+    return {
+        "facts_count": facts_count,
+        "conversation_turns": conv_count,
+        "total_entries": len(entries),
+        "file_size_bytes": size_bytes,
+        "max_entries_limit": MAX_MEMORY_ENTRIES,
+    }
+
+
+def compact_memory() -> str:
+    """Trim oldest log entries preserving active facts to keep lookup performant."""
+    data = _load()
+    before_count = len(data.get("entries", []))
+    if before_count > (MAX_MEMORY_ENTRIES // 2):
+        data["entries"] = data["entries"][-(MAX_MEMORY_ENTRIES // 2):]
+        _save(data)
+        after_count = len(data["entries"])
+        return f"Memory compacted: {before_count} entries reduced to {after_count}."
+    return "Memory compaction skipped: entries within optimal limits."
+
+
 if __name__ == "__main__":
     # Quick test
     print(remember("project", "Building JARVIS with Python"))
