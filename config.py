@@ -67,9 +67,34 @@ WHISPER_MODEL        = "base"     # tiny | base | small | medium | large
 MEMORY_FILE          = BASE_DIR / "jarvis_memory.json"
 MAX_MEMORY_ENTRIES   = 500
 
+# ── System Diagnostics & Logging ──────────────────────────────────────────────
+LOG_LEVEL            = os.getenv("LOG_LEVEL", "INFO").upper()
+DEBUG_MODE           = os.getenv("DEBUG_MODE", "false").lower() == "true"
+VOICE_ENERGY_THRESHOLD = int(os.getenv("VOICE_ENERGY_THRESHOLD", "300"))
+SPEECH_PAUSE_THRESHOLD = float(os.getenv("SPEECH_PAUSE_THRESHOLD", "0.8"))
+
 # ── Paths ─────────────────────────────────────────────────────────────────────
 SCREENSHOT_DIR       = BASE_DIR / "screenshots"
 CODE_OUTPUT_DIR      = BASE_DIR / "code_output"
+
+
+def validate_config() -> dict:
+    """Validate active configurations and report availability of required keys."""
+    report = {
+        "provider": AI_PROVIDER,
+        "valid": True,
+        "warnings": []
+    }
+    if AI_PROVIDER == "groq" and not GROQ_API_KEY:
+        report["valid"] = False
+        report["warnings"].append("GROQ_API_KEY is not set in environment.")
+    elif AI_PROVIDER == "gemini" and not GEMINI_API_KEY:
+        report["valid"] = False
+        report["warnings"].append("GEMINI_API_KEY is not set in environment.")
+    elif AI_PROVIDER == "claude" and not CLAUDE_API_KEY:
+        report["valid"] = False
+        report["warnings"].append("CLAUDE_API_KEY is not set in environment.")
+    return report
 
 # ── Personality System Prompt ─────────────────────────────────────────────────
 SYSTEM_PROMPT = """You are JARVIS (Just A Rather Very Intelligent System), the AI assistant from Iron Man.
