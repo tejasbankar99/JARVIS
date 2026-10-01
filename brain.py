@@ -275,10 +275,21 @@ def get_active_provider() -> str:
     return info.get(AI_PROVIDER, AI_PROVIDER)
 
 
-def clear_session():
-    """Clear in-session conversation history (not persistent memory)."""
-    global _session_history
-    _session_history = []
+def estimate_tokens(text: str) -> int:
+    """Rough heuristic estimate of token count (approx. 4 characters per token)."""
+    return max(1, len(text) // 4)
+
+
+def get_brain_diagnostics() -> dict:
+    """Return diagnostic stats about current brain state and session usage."""
+    total_session_chars = sum(len(m.get("content", "")) for m in _session_history)
+    return {
+        "provider": AI_PROVIDER,
+        "model": get_active_provider(),
+        "session_turns": len(_session_history),
+        "estimated_session_tokens": estimate_tokens(" ".join(m.get("content", "") for m in _session_history)),
+        "max_session_turns": MAX_SESSION_TURNS,
+    }
 
 
 if __name__ == "__main__":
