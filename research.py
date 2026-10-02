@@ -69,7 +69,28 @@ def search_web(query: str, max_results: int = 5) -> str:
         return f"🔍 **Search: {query}**\n\n{summary}"
 
     except Exception as e:
+        # Fallback to Wikipedia summary if DuckDuckGo fails or is rate-limited
+        wiki_summary = search_wikipedia(query)
+        if wiki_summary:
+            return wiki_summary
         return f"Web search encountered an issue: {e}"
+
+
+def search_wikipedia(topic: str) -> str | None:
+    """Fetch quick summary from Wikipedia API as a reliable knowledge fallback."""
+    try:
+        clean_topic = quote_plus(topic.strip())
+        url = f"https://en.wikipedia.org/api/rest_v1/page/summary/{clean_topic}"
+        resp = requests.get(url, timeout=5, headers={"User-Agent": "JARVIS/1.0"})
+        if resp.status_code == 200:
+            data = resp.json()
+            title = data.get("title", topic)
+            extract = data.get("extract", "")
+            if extract:
+                return f"📚 **Wikipedia Summary — {title}**\n\n{extract}"
+    except Exception:
+        pass
+    return None
 
 
 # ── Webpage Reader ─────────────────────────────────────────────────────────────
