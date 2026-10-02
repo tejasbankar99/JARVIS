@@ -200,5 +200,32 @@ def check_battery_alert() -> str | None:
     return None
 
 
+def get_disk_health() -> str:
+    """Return disk space usage breakdown for system drive."""
+    _refresh()
+    with _cache_lock:
+        disk = _cache.get("disk")
+    if disk:
+        total_gb = disk.total / (1024 ** 3)
+        used_gb = disk.used / (1024 ** 3)
+        free_gb = disk.free / (1024 ** 3)
+        return f"💾 **Disk Space:** {used_gb:.1f} GB used / {total_gb:.1f} GB total ({disk.percent}% used, {free_gb:.1f} GB free)"
+    return "💾 **Disk Space:** Telemetry unavailable"
+
+
+def check_network_latency(host: str = "8.8.8.8", timeout: float = 2.0) -> float:
+    """Ping a host via socket connection to measure network round-trip latency in ms."""
+    import socket
+    start = time.time()
+    try:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.settimeout(timeout)
+        sock.connect((host, 53))
+        sock.close()
+        return round((time.time() - start) * 1000, 1)
+    except Exception:
+        return -1.0
+
+
 # ── Start background refresh immediately on import ─────────────────────────────
 _start_background_refresh()
