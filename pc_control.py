@@ -237,3 +237,48 @@ def kill_app(app_name: str) -> str:
     if killed:
         return f"Terminated: {', '.join(killed)}, sir."
     return f"No process matching '{app_name}' was found, sir."
+
+
+def media_play_pause() -> str:
+    """Toggle media playback (play/pause) across system media players."""
+    try:
+        pyautogui.press("playpause")
+        return "Media playback toggled, sir."
+    except Exception as e:
+        return f"Could not toggle media playback: {e}"
+
+
+def media_next_track() -> str:
+    """Skip to next media track."""
+    try:
+        pyautogui.press("nexttrack")
+        return "Skipped to next track, sir."
+    except Exception as e:
+        return f"Could not skip track: {e}"
+
+
+def media_prev_track() -> str:
+    """Return to previous media track."""
+    try:
+        pyautogui.press("prevtrack")
+        return "Returning to previous track, sir."
+    except Exception as e:
+        return f"Could not change track: {e}"
+
+
+def toggle_mute() -> str:
+    """Toggle master audio mute state."""
+    try:
+        pyautogui.press("volumemute")
+        return "Audio mute toggled, sir."
+    except Exception as e:
+        return f"Could not toggle mute: {e}"
+
+
+def minimize_all_windows() -> str:
+    """Minimize all open windows to show the desktop."""
+    try:
+        pyautogui.hotkey("win", "d")
+        return "All windows minimized, sir."
+    except Exception as e:
+        return f"Could not minimize windows: {e}"
