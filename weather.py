@@ -7,19 +7,27 @@ Supports current conditions, forecasts, and location-based queries.
 
 import requests
 import json
+import time
+
+# ── In-Memory Weather Cache ──────────────────────────────────────────────────
+_weather_cache: dict = {}
+_CACHE_TTL = 1200  # 20 minutes in seconds
 
 
 def get_weather(location: str = "") -> str:
     """
-    Fetch current weather for a location.
+    Fetch current weather for a location with 20-minute caching.
     Defaults to auto-detected location if none provided.
-
-    Args:
-        location: City name (e.g. "Mumbai") or leave empty for auto-detect
-
-    Returns:
-        JARVIS-style weather report
     """
+    cache_key = location.strip().lower()
+    now = time.time()
+
+    # Check cache freshness
+    if cache_key in _weather_cache:
+        cached_time, cached_report = _weather_cache[cache_key]
+        if now - cached_time < _CACHE_TTL:
+            return cached_report
+
     loc = location.strip().replace(" ", "+") if location.strip() else ""
     try:
         # wttr.in JSON API — completely free, no key needed
@@ -54,7 +62,7 @@ def get_weather(location: str = "") -> str:
 
         forecast_str = "\n".join(forecast_lines)
 
-        return (
+        report = (
             f"🌤️ **Weather Report — {city}, {country}**\n\n"
             f"**Current:** {desc}\n"
             f"**Temperature:** {temp_c}°C ({temp_f}°F), feels like {feels_c}°C\n"
@@ -62,6 +70,8 @@ def get_weather(location: str = "") -> str:
             f"**Visibility:** {visibility} km\n\n"
             f"**3-Day Forecast:**\n{forecast_str}"
         )
+        _weather_cache[cache_key] = (now, report)
+        return report
 
     except requests.exceptions.ConnectionError:
         return "No internet connection to fetch weather, sir."
