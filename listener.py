@@ -146,9 +146,17 @@ def _listen_loop():
     Uses ambient noise adjustment for accuracy in noisy environments.
     """
     recognizer = sr.Recognizer()
-    recognizer.energy_threshold        = 300   # Start higher — prevents early mis-calibration
-    recognizer.dynamic_energy_threshold = True
-    recognizer.pause_threshold         = 0.6
+    try:
+        from config import VOICE_ENERGY_THRESHOLD, SPEECH_PAUSE_THRESHOLD
+        initial_energy = VOICE_ENERGY_THRESHOLD
+        pause_thresh = SPEECH_PAUSE_THRESHOLD
+    except Exception:
+        initial_energy = 300
+        pause_thresh = 0.6
+
+    recognizer.energy_threshold         = initial_energy
+    recognizer.dynamic_energy_threshold  = True
+    recognizer.pause_threshold          = pause_thresh
 
     print(f"[Listener] Listening for: \"{STARTUP_WAKE_WORD}\"")
     print(f"[Listener] Alternatives : {ALT_WAKE_WORDS}")
