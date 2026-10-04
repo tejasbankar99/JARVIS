@@ -53,6 +53,7 @@ GROQ_API_KEY=your_free_groq_api_key_here
   python main.py           # Full GUI HUD + Voice enabled
   python main.py --cli     # Text-only CLI mode
   python listener.py       # Background system tray listener
+  python test_system.py    # Automated subsystem diagnostics self-test
   ```
 
 ---
@@ -61,6 +62,7 @@ GROQ_API_KEY=your_free_groq_api_key_here
 
 ```
 "Hey JARVIS, open Chrome"
+"Play music" / "Next track" / "Mute" / "Minimize all windows"
 "Search for latest developments in quantum computing"
 "Take a screenshot and describe what's on screen"
 "Write me a Python web scraper and save it to scraper.py"
@@ -81,6 +83,7 @@ d:/JARVIS/
 ├── brain.py             # Multi-provider AI reasoning (Groq/Gemini/Ollama/Claude)
 ├── voice.py             # Dedicated TTS worker thread + STT speech recognition
 ├── listener.py          # Always-on background tray listener (wake up JARVIS)
+├── test_system.py       # Automated subsystem health check & self-test
 ├── pc_control.py        # Windows system control, app launcher, screenshots & vision
 ├── research.py          # DuckDuckGo search + URL & PDF reader/summarizer
 ├── memory.py            # Persistent JSON memory store
