@@ -127,9 +127,16 @@ class ArcReactorWidget(QWidget):
         cx, cy = self.width() / 2, self.height() / 2
         max_r = min(cx, cy) - 5
 
-        # ── Background circle ─────────────────────────────────────────────────
+        # ── Background circle with status glow modulation ─────────────────────
+        status_glows = {
+            "listening": QColor("#002f20"),
+            "processing": QColor("#2b1e05"),
+            "speaking": QColor("#08223d"),
+            "idle": QColor("#0a1a2a"),
+        }
+        center_color = status_glows.get(self._status, QColor("#0a1a2a"))
         bg_grad = QRadialGradient(cx, cy, max_r)
-        bg_grad.setColorAt(0, QColor("#0a1a2a"))
+        bg_grad.setColorAt(0, center_color)
         bg_grad.setColorAt(1, QColor("#050a0f"))
         painter.setBrush(QBrush(bg_grad))
         painter.setPen(Qt.NoPen)
