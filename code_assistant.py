@@ -223,3 +223,26 @@ def generate_tests(code: str, framework: str = None, language: str = "python") -
         f"Make the tests comprehensive and runnable."
     )
     return ask(prompt)
+
+
+def review_code(code: str, language: str = "python") -> str:
+    """
+    Perform a comprehensive code review focusing on security, performance, and best practices.
+
+    Args:
+        code:     Source code to review
+        language: Programming language (default: python)
+
+    Returns:
+        Structured code review with suggestions and security check
+    """
+    prompt = (
+        f"Perform a professional code review for the following {language} code:\n\n"
+        f"```{language}\n{code}\n```\n\n"
+        f"Review structure:\n"
+        f"1. Summary & Strengths\n"
+        f"2. Potential Bugs & Edge Cases\n"
+        f"3. Optimization & Readability Improvements\n"
+        f"4. Recommended Refactored Snippet"
+    )
+    return ask(prompt)
