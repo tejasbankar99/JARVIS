@@ -218,3 +218,36 @@ def handle_browser_command(original: str, text: str) -> str | None:
         return scroll_page("up")
 
     return None
+
+
+def reopen_closed_tab() -> str:
+    """Reopen the most recently closed browser tab (Ctrl+Shift+T)."""
+    try:
+        import pyautogui
+        pyautogui.hotkey("ctrl", "shift", "t")
+        return "Reopening last closed tab, sir."
+    except Exception as e:
+        return f"Could not restore tab: {e}"
+
+
+def switch_tab(direction: str = "next") -> str:
+    """Switch browser tab forward (Ctrl+Tab) or backward (Ctrl+Shift+Tab)."""
+    try:
+        import pyautogui
+        if direction == "prev":
+            pyautogui.hotkey("ctrl", "shift", "tab")
+            return "Switched to previous tab, sir."
+        pyautogui.hotkey("ctrl", "tab")
+        return "Switched to next tab, sir."
+    except Exception as e:
+        return f"Could not switch tab: {e}"
+
+
+def validate_and_format_url(target: str) -> str:
+    """Format and validate target string into a fully qualified HTTPS URL."""
+    target = target.strip()
+    if target.startswith(("http://", "https://")):
+        return target
+    if "." in target and " " not in target:
+        return f"https://{target}"
+    return f"https://www.google.com/search?q={quote_plus(target)}"
