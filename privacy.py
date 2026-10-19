@@ -223,3 +223,38 @@ def get_security_status() -> str:
         f"**Auto-Lock:**      {auto_lock}\n"
         f"**Activity Log:**   {'Active' if ACTIVITY_LOG.exists() else 'Empty'}"
     )
+
+
+# ── Credential & Data Sanitization ────────────────────────────────────────────
+
+def sanitize_sensitive_data(text: str) -> str:
+    """
+    Mask API keys, bearer tokens, passwords, and JWTs from log strings and memory.
+    Replaces sensitive tokens with sanitized placeholder strings.
+    """
+    import re
+    if not text:
+        return ""
+    # Mask JWT tokens
+    sanitized = re.sub(r'eyJ[a-zA-Z0-9_-]{10,}\.eyJ[a-zA-Z0-9_-]{10,}\.[a-zA-Z0-9_-]{10,}', '[REDACTED_JWT]', text)
+    # Mask standard API keys (e.g. sk-..., gsk_..., ghp_...)
+    sanitized = re.sub(r'\b(sk-[a-zA-Z0-9]{20,}|gsk_[a-zA-Z0-9]{20,}|ghp_[a-zA-Z0-9]{20,})\b', '[REDACTED_KEY]', sanitized)
+    # Mask Authorization headers
+    sanitized = re.sub(r'(?i)(bearer\s+)[a-zA-Z0-9_\-\.]{15,}', r'\1[REDACTED_TOKEN]', sanitized)
+    # Mask pass/password assignments
+    sanitized = re.sub(r'(?i)(password\s*[:=]\s*)[^\s,;]+', r'\1[REDACTED]', sanitized)
+    return sanitized
+
+
+def contains_pii_or_secret(text: str) -> bool:
+    """Return True if text appears to contain sensitive tokens or secret credentials."""
+    import re
+    if not text:
+        return False
+    patterns = [
+        r'eyJ[a-zA-Z0-9_-]{10,}\.eyJ[a-zA-Z0-9_-]{10,}',
+        r'\b(sk-[a-zA-Z0-9]{20,}|gsk_[a-zA-Z0-9]{20,}|ghp_[a-zA-Z0-9]{20,})\b',
+        r'(?i)bearer\s+[a-zA-Z0-9_\-\.]{15,}',
+        r'(?i)(api[_-]?key|secret|password)\s*[:=]\s*[^\s,;]+'
+    ]
+    return any(re.search(p, text) for p in patterns)
