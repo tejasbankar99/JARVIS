@@ -318,3 +318,29 @@ if __name__ == "__main__":
     print("Testing STT...")
     result = listen()
     print(f"Heard: {result}" if result else "No speech detected.")
+
+
+def set_voice_speed(preset: str = "normal") -> str:
+    """
+    Adjust TTS speech rate preset ('slow', 'normal', 'fast').
+    """
+    speed_map = {"slow": -2, "normal": 1, "fast": 3}
+    rate = speed_map.get(preset.lower(), 1)
+    try:
+        import win32com.client
+        speaker = win32com.client.Dispatch("SAPI.SpVoice")
+        speaker.Rate = rate
+        return f"Voice rate set to {preset} (SAPI Rate: {rate}), sir."
+    except Exception as e:
+        return f"Could not update voice rate: {e}"
+
+
+def get_voice_diagnostics() -> dict:
+    """Return diagnostic telemetry of audio input and output engines."""
+    return {
+        "tts_engine": TTS_ENGINE,
+        "stt_engine": STT_ENGINE,
+        "tts_queue_pending": _tts_queue.qsize(),
+        "tts_worker_alive": _tts_thread.is_alive() if _tts_thread else False,
+        "available_mics": len(sr.Microphone.list_microphone_names()),
+    }
