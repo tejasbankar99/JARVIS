@@ -229,3 +229,22 @@ def check_network_latency(host: str = "8.8.8.8", timeout: float = 2.0) -> float:
 
 # ── Start background refresh immediately on import ─────────────────────────────
 _start_background_refresh()
+
+
+def get_top_processes(n: int = 5) -> str:
+    """Return top resource-consuming running processes by CPU and memory usage."""
+    procs = []
+    for p in psutil.process_iter(["pid", "name", "cpu_percent", "memory_percent"]):
+        try:
+            procs.append(p.info)
+        except (psutil.NoSuchProcess, psutil.AccessDenied):
+            pass
+    # Sort by memory percent descending
+    top_mem = sorted(procs, key=lambda p: p.get("memory_percent") or 0, reverse=True)[:n]
+    lines = ["🔥 **Top Resource Consuming Processes:**"]
+    for p in top_mem:
+        name = p.get("name", "Unknown")
+        mem = p.get("memory_percent") or 0.0
+        pid = p.get("pid", 0)
+        lines.append(f"  • {name} (PID: {pid}) — {mem:.1f}% RAM")
+    return "\n".join(lines)
