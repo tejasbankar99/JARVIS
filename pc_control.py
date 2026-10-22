@@ -282,3 +282,48 @@ def minimize_all_windows() -> str:
         return "All windows minimized, sir."
     except Exception as e:
         return f"Could not minimize windows: {e}"
+
+
+def get_clipboard_text() -> str:
+    """Read and return current text from the Windows system clipboard."""
+    try:
+        import win32clipboard
+        win32clipboard.OpenClipboard()
+        data = win32clipboard.GetClipboardData()
+        win32clipboard.CloseClipboard()
+        return f"📋 Clipboard content: {data}"
+    except Exception:
+        try:
+            import pyautogui
+            import pyperclip
+            return f"📋 Clipboard content: {pyperclip.paste()}"
+        except Exception as e:
+            return f"Could not read clipboard: {e}"
+
+
+def set_clipboard_text(text: str) -> str:
+    """Copy given text into the Windows system clipboard."""
+    try:
+        import win32clipboard
+        win32clipboard.OpenClipboard()
+        win32clipboard.EmptyClipboard()
+        win32clipboard.SetClipboardText(text)
+        win32clipboard.CloseClipboard()
+        return "Copied text to clipboard, sir."
+    except Exception:
+        try:
+            import pyperclip
+            pyperclip.copy(text)
+            return "Copied text to clipboard, sir."
+        except Exception as e:
+            return f"Could not set clipboard: {e}"
+
+
+def lock_workstation() -> str:
+    """Lock the Windows workstation immediately for security."""
+    try:
+        import ctypes
+        ctypes.windll.user32.LockWorkStation()
+        return "Workstation locked, sir."
+    except Exception as e:
+        return f"Could not lock workstation: {e}"
