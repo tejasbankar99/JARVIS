@@ -197,3 +197,50 @@ def handle_timer_command(text: str) -> str:
         return set_timer(seconds)
 
     return "Please specify a duration, sir. For example: 'set a timer for 10 minutes'."
+
+
+def set_recurring_reminder(label: str, interval_seconds: int) -> str:
+    """
+    Schedule a repeating background reminder at a fixed interval.
+    """
+    if interval_seconds < 10:
+        return "Recurring interval must be at least 10 seconds, sir."
+
+    timer_id = time.time()
+
+    def _loop():
+        while True:
+            time.sleep(interval_seconds)
+            with _timers_lock:
+                active_ids = [t["id"] for t in _timers]
+            if timer_id not in active_ids:
+                break
+            msg = f"🔁 **Recurring Reminder:** {label}"
+            _fire(msg)
+
+    t = threading.Thread(target=_loop, daemon=True, name=f"Recurring-{timer_id}")
+    with _timers_lock:
+        _timers.append({
+            "id": timer_id,
+            "label": f"[Recurring] {label}",
+            "interval": interval_seconds,
+            "type": "recurring",
+            "thread": t
+        })
+    t.start()
+    mins = interval_seconds // 60
+    return f"Recurring reminder for '{label}' set every {mins} minutes, sir."
+
+
+def get_scheduler_diagnostics() -> dict:
+    """Return diagnostic telemetry of scheduler queue and active timers."""
+    with _timers_lock:
+        total = len(_timers)
+        recurring = sum(1 for t in _timers if t.get("type") == "recurring")
+        one_shot = total - recurring
+    return {
+        "active_timers_total": total,
+        "one_shot_timers": one_shot,
+        "recurring_timers": recurring,
+        "callback_attached": _notify_callback is not None,
+    }
