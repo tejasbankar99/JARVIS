@@ -111,3 +111,13 @@ d:/JARVIS/
 | PyAudio errors on Windows | Handled automatically via `PyAudioWPatch` and `pyaudio_shim.py` |
 | Background Tray Icon | Run `python listener.py` or double-click `START_LISTENER.bat` |
 | CLI / GUI Mode | Use `python main.py --cli` for lightweight terminal interaction |
+
+
+---
+
+## Security, Telemetry & Automation Highlights
+
+* **Privacy & Sanitization:** Real-time JWT, API key, and credential redaction protects session logs.
+* **System Telemetry:** Live memory metrics, top resource-consuming process inspection, and network latency ping.
+* **Desktop Automation:** Multi-tab browser management, clipboard read/write helpers, and instant workstation lock.
+* **Diagnostics Suite:** One-command self-test via `python test_system.py` verifying end-to-end hardware and API readiness.
