@@ -75,3 +75,23 @@ def run_diagnostics():
 
 if __name__ == "__main__":
     run_diagnostics()
+
+
+def benchmark_subsystems():
+    """Run quick execution benchmarks on core modules."""
+    print("\n[6/6] Benchmarking Subsystem Latencies...")
+    try:
+        from system_monitor import check_network_latency
+        lat = check_network_latency()
+        print(f"  [OK] Network Ping (DNS): {lat} ms")
+    except Exception as e:
+        print(f"  [FAIL] Network ping error: {e}")
+
+    try:
+        from privacy import sanitize_sensitive_data
+        sample = "API key sk-1234567890abcdef1234567890 and Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.doNotLeak"
+        sanitized = sanitize_sensitive_data(sample)
+        assert "[REDACTED_KEY]" in sanitized and "[REDACTED_JWT]" in sanitized
+        print("  [OK] Privacy sanitization filter verified.")
+    except Exception as e:
+        print(f"  [FAIL] Privacy test error: {e}")
