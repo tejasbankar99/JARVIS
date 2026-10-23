@@ -295,3 +295,32 @@ def get_brain_diagnostics() -> dict:
 if __name__ == "__main__":
     print(f"Active AI: {get_active_provider()}")
     print(ask("Hello! Who are you?"))
+
+
+# ── Performance Benchmarking & Health Circuit ──────────────────────────────────
+_latency_records: list = []
+
+
+def record_provider_latency(provider: str, elapsed_ms: float) -> None:
+    """Record LLM roundtrip latency for diagnostics."""
+    _latency_records.append({
+        "provider": provider,
+        "latency_ms": round(elapsed_ms, 2),
+        "timestamp": time.time() if "time" in globals() else 0
+    })
+    if len(_latency_records) > 50:
+        _latency_records.pop(0)
+
+
+def get_latency_benchmark() -> dict:
+    """Return average and latest latency stats across recorded AI calls."""
+    if not _latency_records:
+        return {"samples": 0, "avg_latency_ms": 0.0, "last_latency_ms": 0.0}
+    latencies = [r["latency_ms"] for r in _latency_records]
+    return {
+        "samples": len(latencies),
+        "avg_latency_ms": round(sum(latencies) / len(latencies), 1),
+        "min_latency_ms": min(latencies),
+        "max_latency_ms": max(latencies),
+        "last_latency_ms": latencies[-1],
+    }
